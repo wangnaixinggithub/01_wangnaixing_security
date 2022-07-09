@@ -1,41 +1,48 @@
 <template>
   <div class="app-container">
+
     <el-card class="filter-container" shadow="never">
       <div>
         <i class="el-icon-search"></i>
         <span>筛选搜索</span>
+
         <el-button
           style="float:right"
           type="primary"
-          @click="handleSearchList()"
+          @click="handleSearchtableData()"
           size="small">
           查询搜索
         </el-button>
+
         <el-button
           style="float:right;margin-right: 15px"
           @click="handleResetSearch()"
           size="small">
           重置
         </el-button>
+
       </div>
+
       <div style="margin-top: 15px">
-        <el-form :inline="true" :model="listQuery" size="small" label-width="140px">
+        <el-form :inline="true" :model="queryParam" size="small" label-width="140px">
           <el-form-item label="输入搜索：">
-            <el-input v-model="listQuery.keyword" class="input-width" placeholder="帐号/姓名" clearable></el-input>
+            <el-input v-model="queryParam.keyword" class="input-width" placeholder="帐号/姓名" clearable></el-input>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
+
     <el-card class="operate-container" shadow="never">
       <i class="el-icon-tickets"></i>
       <span>数据列表</span>
       <el-button size="mini" class="btn-add" @click="handleAdd()" style="margin-left: 20px">添加</el-button>
     </el-card>
+
     <div class="table-container">
       <el-table ref="adminTable"
-                :data="list"
+                :data="tableData"
                 style="width: 100%;"
-                v-loading="listLoading" border>
+                v-loading="tableDataLoading" border>
         <el-table-column label="编号" width="100" align="center">
           <template slot-scope="scope">{{scope.row.id}}</template>
         </el-table-column>
@@ -89,11 +96,11 @@
         background
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        layout="total, sizes,prev, pager, next,jumper"
-        :current-page.sync="listQuery.pageNum"
-        :page-size="listQuery.pageSize"
+        layout="totalPages, sizes,prev, pager, next,jumper"
+        :current-page.sync="queryParam.pageNum"
+        :page-size="queryParam.pageSize"
         :page-sizes="[10,15,20]"
-        :total="total">
+        :totalPages="totalPages">
       </el-pagination>
     </div>
 
@@ -140,7 +147,7 @@
       width="30%">
       <el-select v-model="allocRoleIds" multiple placeholder="请选择" size="small" style="width: 80%">
         <el-option
-          v-for="item in allRoleList"
+          v-for="item in allRoletableData"
           :key="item.id"
           :label="item.name"
           :value="item.id">
@@ -155,15 +162,16 @@
   </div>
 </template>
 <script>
-  import dataApi from "@/api/login";
-  import {fetchAllRoleList} from '@/api/role';
+  import dataApi from "@/api/login"
+  import dataApiByRole from "@/api/role"
   import {formatDate} from '@/utils/date';
 
-  const defaultListQuery = {
+  const defaultQueryParam = {
     pageNum: 1,
     pageSize: 10,
     keyword: null
-  };
+  }
+
   const defaultAdmin = {
     id: null,
     username: null,
@@ -172,27 +180,27 @@
     email: null,
     note: null,
     status: 1
-  };
+  }
   export default {
-    name: 'adminList',
+    name: 'admintableData',
     data() {
       return {
-        listQuery: Object.assign({}, defaultListQuery),
-        list: null,
-        total: null,
-        listLoading: false,
+        queryParam:Object.assign({},defaultQueryParam), //过滤参数
+        tableData: null,//表格数据
+        totalPages: null,//表格记录总数
+        tableDataLoading: false,
         dialogVisible: false,
         admin: Object.assign({}, defaultAdmin),
         isEdit: false,
         allocDialogVisible: false,
         allocRoleIds:[],
-        allRoleList:[],
+        allRoletableData:[],
         allocAdminId:null
       }
     },
     created() {
-      this.getList();
-      this.getAllRoleList();
+      this.gettableData();
+      this.getAllRoletableData();
     },
     filters: {
       formatDateTime(time) {
@@ -205,20 +213,20 @@
     },
     methods: {
       handleResetSearch() {
-        this.listQuery = Object.assign({}, defaultListQuery);
+        this.queryParam = Object.assign({}, defaultQueryParam);
       },
-      handleSearchList() {
-        this.listQuery.pageNum = 1;
-        this.getList();
+      handleSearchtableData() {
+        this.queryParam.pageNum = 1;
+        this.gettableData();
       },
       handleSizeChange(val) {
-        this.listQuery.pageNum = 1;
-        this.listQuery.pageSize = val;
-        this.getList();
+        this.queryParam.pageNum = 1;
+        this.queryParam.pageSize = val;
+        this.gettableData();
       },
       handleCurrentChange(val) {
-        this.listQuery.pageNum = val;
-        this.getList();
+        this.queryParam.pageNum = val;
+        this.gettableData();
       },
       handleAdd() {
         this.dialogVisible = true;
@@ -240,7 +248,7 @@
         }).catch(() => {
 
           this.$message({type: 'info', message: '取消修改'})
-          this.getList()
+          this.gettableData()
         })
       },
       handleDelete(index, row) {
@@ -253,7 +261,7 @@
           dataApi.deleteAdmin(row.id).then(response => {
 
             this.$message({type: 'success', message: '删除成功!'})
-            this.getList()
+            this.gettableData()
 
           })
         })
@@ -274,7 +282,7 @@
 
               this.$message({message: '修改成功！', type: 'success'})
               this.dialogVisible =false
-              this.getList()
+              this.gettableData()
             })
 
           } else {
@@ -283,7 +291,7 @@
 
               this.$message({message: '添加成功！', type: 'success'})
               this.dialogVisible =false
-              this.getList()
+              this.gettableData()
 
             })
 
@@ -312,37 +320,37 @@
         this.allocAdminId = row.id
         this.allocDialogVisible = true
 
-        this.getRoleListByAdmin(row.id)
+        this.getRoletableDataByAdmin(row.id)
       },
-      getList() {
+      gettableData() {
 
-        this.listLoading = true
+        this.tableDataLoading = true
 
 
-        dataApi.findAllAdmin(this.listQuery).then(response => {
-          this.listLoading = false
+        dataApi.findAll(this.queryParam).then(response => {
+          this.tableDataLoading = false
 
-          this.list = response.data.list
-          this.total = response.data.total
+          this.tableData = response.data.tableData
+          this.totalPages = response.data.totalPages
         })
 
       },
-      getAllRoleList() {
-        fetchAllRoleList().then(response => {
-          this.allRoleList = response.data
+      getAllRoletableData() {
+        dataApiByRole.fetchAllRoletableData().then(response => {
+          this.allRoletableData = response.data
         });
       },
-      getRoleListByAdmin(adminId) {
+      getRoletableDataByAdmin(adminId) {
         dataApi.getRoleByAdmin(adminId).then(response => {
 
-          let allocRoleList = response.data;
+          let allocRoletableData = response.data;
           this.allocRoleIds=[];
 
-          if(allocRoleList!=null && allocRoleList.length > 0){
+          if(allocRoletableData!=null && allocRoletableData.length > 0){
 
-            for(let i=0;i<allocRoleList.length;i++){
+            for(let i=0;i<allocRoletableData.length;i++){
 
-              this.allocRoleIds.push(allocRoleList[i].id);
+              this.allocRoleIds.push(allocRoletableData[i].id);
             }
           }
 

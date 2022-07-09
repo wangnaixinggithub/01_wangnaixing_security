@@ -1,4 +1,4 @@
-<template> 
+<template>
   <div class="app-container">
     <el-card class="filter-container" shadow="never">
       <div>
@@ -34,7 +34,7 @@
     <div class="table-container">
       <el-table ref="roleTable"
                 :data="list"
-                style="width: 100%;"
+                style="width: 100%"
                 v-loading="listLoading" border>
         <el-table-column label="编号" width="100" align="center">
           <template slot-scope="scope">{{scope.row.id}}</template>
@@ -131,21 +131,23 @@
   </div>
 </template>
 <script>
-  import {fetchList,createRole,updateRole,updateStatus,deleteRole} from '@/api/role';
-  import {formatDate} from '@/utils/date';
+
+  import dataApi from '@/api/role'
+  import {formatDate} from '@/utils/date'
+
 
   const defaultListQuery = {
     pageNum: 1,
     pageSize: 5,
     keyword: null
-  };
+  }
   const defaultRole = {
     id: null,
     name: null,
     description: null,
     adminCount: 0,
     status: 1
-  };
+  }
   export default {
     name: 'roleList',
     data() {
@@ -160,38 +162,38 @@
       }
     },
     created() {
-      this.getList();
+      this.getList()
     },
     filters: {
       formatDateTime(time) {
         if (time == null || time === '') {
-          return 'N/A';
+          return 'N/A'
         }
-        let date = new Date(time);
+        let date = new Date(time)
         return formatDate(date, 'yyyy-MM-dd hh:mm:ss')
       }
     },
     methods: {
       handleResetSearch() {
-        this.listQuery = Object.assign({}, defaultListQuery);
+        this.listQuery = Object.assign({}, defaultListQuery)
       },
       handleSearchList() {
-        this.listQuery.pageNum = 1;
-        this.getList();
+        this.listQuery.pageNum = 1
+        this.getList()
       },
       handleSizeChange(val) {
-        this.listQuery.pageNum = 1;
-        this.listQuery.pageSize = val;
-        this.getList();
+        this.listQuery.pageNum = 1
+        this.listQuery.pageSize = val
+        this.getList()
       },
       handleCurrentChange(val) {
-        this.listQuery.pageNum = val;
-        this.getList();
+        this.listQuery.pageNum = val
+        this.getList()
       },
       handleAdd() {
-        this.dialogVisible = true;
-        this.isEdit = false;
-        this.role = Object.assign({},defaultRole);
+        this.dialogVisible = true
+        this.isEdit = false
+        this.role = Object.assign({},defaultRole)
       },
       handleStatusChange(index, row) {
         this.$confirm('是否要修改该状态?', '提示', {
@@ -199,19 +201,19 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          updateStatus(row.id, {status: row.status}).then(response => {
+          dataApi.updateStatus(row.id, {status: row.status}).then(response => {
             this.$message({
               type: 'success',
               message: '修改成功!'
-            });
-          });
+            })
+          })
         }).catch(() => {
           this.$message({
             type: 'info',
             message: '取消修改'
-          });
-          this.getList();
-        });
+          })
+          this.getList()
+        })
       },
       handleDelete(index, row) {
         this.$confirm('是否要删除该角色?', '提示', {
@@ -219,23 +221,22 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          let ids = [];
-          ids.push(row.id);
-          let params=new URLSearchParams();
-          params.append("ids",ids);
-          deleteRole(params).then(response => {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            });
-            this.getList();
-          });
-        });
+          let ids = []
+          ids.push(row.id)
+          let params=new URLSearchParams()
+          params.append("ids",ids)
+
+          dataApi.deleteRole(params).then(() => {
+
+            this.$message({type: 'success', message: '删除成功!'})
+            this.getList()
+          })
+        })
       },
       handleUpdate(index, row) {
-        this.dialogVisible = true;
-        this.isEdit = true;
-        this.role = Object.assign({},row);
+        this.dialogVisible = true
+        this.isEdit = true
+        this.role = Object.assign({},row)
       },
       handleDialogConfirm() {
         this.$confirm('是否要确认?', '提示', {
@@ -244,22 +245,21 @@
           type: 'warning'
         }).then(() => {
           if (this.isEdit) {
-            updateRole(this.role.id,this.role).then(response => {
-              this.$message({
-                message: '修改成功！',
-                type: 'success'
-              });
-              this.dialogVisible =false;
-              this.getList();
+
+            dataApi.updateRole(this.role.id,this.role).then(() => {
+
+              this.$message({message: '修改成功！', type: 'success'})
+              this.dialogVisible =false
+              this.getList()
+
             })
           } else {
-            createRole(this.role).then(response => {
-              this.$message({
-                message: '添加成功！',
-                type: 'success'
-              });
-              this.dialogVisible =false;
-              this.getList();
+
+            dataApi.createRole(this.role).then(() => {
+
+              this.$message({message: '添加成功！', type: 'success'})
+              this.dialogVisible =false
+              this.getList()
             })
           }
         })
@@ -271,12 +271,13 @@
         this.$router.push({path:'/ums/allocResource',query:{roleId:row.id}})
       },
       getList() {
-        this.listLoading = true;
-        fetchList(this.listQuery).then(response => {
-          this.listLoading = false;
-          this.list = response.data.list;
-          this.total = response.data.total;
-        });
+        this.listLoading = true
+        dataApi.fetchList(this.listQuery).then(response => {
+          this.listLoading = false
+
+          this.list = response.data.list
+          this.total = response.data.total
+        })
       }
     }
   }

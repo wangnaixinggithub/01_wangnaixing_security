@@ -28,7 +28,7 @@ const logout= ()=> $http.post('/admin/logout')
  * @param params
  * @returns {*}
  */
-const findAllAdmin = params=> $http.get('/admin/list',params)
+const findAll = params=> $http.get('/admin/list',params)
 
 
 
@@ -89,7 +89,7 @@ const dataApi = {
   login, //登录
   logout, //退出
   getAdminInfo, //获取用户信息
-  findAllAdmin, //查询全部用户信息
+  findAll, //查询全部用户信息
   createAdmin, //创建用户信息
   updateAdmin, //修改用户信息
   updateAdminStatus,  //更新用户状态

@@ -18,7 +18,8 @@
 </template>
 
 <script>
-  import {fetchTreeList} from '@/api/menu';
+
+  import dataApi from "@/api/menu"
   import {listMenuByRole,allocMenu} from '@/api/role';
 
   export default {
@@ -40,7 +41,7 @@
     },
     methods: {
       treeList() {
-        fetchTreeList().then(response => {
+        dataApi.fetchTreeList().then(response => {
           this.menuTreeList = response.data;
         });
       },

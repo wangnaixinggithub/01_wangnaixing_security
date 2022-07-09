@@ -85,8 +85,7 @@
 </template>
 
 <script>
-  import {fetchList,deleteMenu,updateMenu,updateHidden} from '@/api/menu'
-
+  import dataApi from "../../../api/menu"
   export default {
     name: "menuList",
     data() {
@@ -124,30 +123,34 @@
         this.$router.push('/ums/addMenu');
       },
       getList() {
-        this.listLoading = true;
-        fetchList(this.parentId, this.listQuery).then(response => {
-          this.listLoading = false;
-          this.list = response.data.list;
-          this.total = response.data.total;
-        });
+        this.listLoading = true
+
+        dataApi.findAllMenu(this.parentId, this.listQuery).then(response => {
+          this.listLoading = false
+
+          this.list = response.data.list
+          this.total = response.data.total
+        })
+
       },
       handleSizeChange(val) {
-        this.listQuery.pageNum = 1;
-        this.listQuery.pageSize = val;
+
+        this.listQuery.pageNum = 1
+        this.listQuery.pageSize = val
+
         this.getList();
       },
       handleCurrentChange(val) {
-        this.listQuery.pageNum = val;
+
+        this.listQuery.pageNum = val
         this.getList();
       },
       handleHiddenChange(index, row) {
-        updateHidden(row.id,{hidden:row.hidden}).then(response=>{
-          this.$message({
-            message: '修改成功',
-            type: 'success',
-            duration: 1000
-          });
-        });
+
+        dataApi.updateHidden(row.id,{hidden:row.hidden}).then( () =>
+          this.$message({message: '修改成功', type: 'success', duration: 1000
+          })
+        )
       },
       handleShowNextLevel(index, row) {
         this.$router.push({path: '/ums/menu', query: {parentId: row.id}})
@@ -156,20 +159,19 @@
         this.$router.push({path:'/ums/updateMenu',query:{id:row.id}});
       },
       handleDelete(index, row) {
+
         this.$confirm('是否要删除该菜单', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteMenu(row.id).then(response => {
-            this.$message({
-              message: '删除成功',
-              type: 'success',
-              duration: 1000
-            });
-            this.getList();
-          });
-        });
+
+          dataApi.deleteMenu(row.id).then(() => {
+            this.$message({message: '删除成功', type: 'success', duration: 1000})
+            this.getList()
+          })
+
+        })
       }
     },
     filters: {

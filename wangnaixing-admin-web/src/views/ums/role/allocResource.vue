@@ -25,9 +25,10 @@
 </template>
 
 <script>
-  import {fetchAllResourceList} from '@/api/resource';
-  import {listAllCate} from '@/api/resourceCategory';
-  import {allocResource,listResourceByRole} from '@/api/role';
+  import dataApi from "@/api/resource"
+  import dataApiByRole from "@/api/role"
+  import dataApiByResourceCategory from '@/api/resourceCategory';
+
 
   export default {
     name: "allocResource",
@@ -44,16 +45,18 @@
     },
     methods: {
       getAllResourceList() {
-        fetchAllResourceList().then(response => {
-          this.allResource = response.data;
+        dataApi.fetchAllResourceList().then(response => {
+          this.allResource = response.data
+
           for (let i = 0; i < this.allResource.length; i++) {
-            this.allResource[i].checked = false;
+            this.allResource[i].checked = false
           }
-          this.getResourceByRole(this.roleId);
-        });
+
+          this.getResourceByRole(this.roleId)
+        })
       },
       getAllResourceCateList() {
-        listAllCate().then(response => {
+        dataApiByResourceCategory.listAllCate().then(response => {
           this.allResourceCate = response.data;
           for (let i = 0; i < this.allResourceCate.length; i++) {
             this.allResourceCate[i].checked = false;
@@ -73,15 +76,19 @@
         return cateResource;
       },
       getResourceByRole(roleId){
-        listResourceByRole(roleId).then(response=>{
-          let allocResource = response.data;
+        dataApi.listResourceByRole(roleId).then(response=>{
+
+          let allocResource = response.data
+
           this.allResource.forEach(item=>{
             item.checked = this.getResourceChecked(item.id,allocResource);
-          });
+          })
+
           this.allResourceCate.forEach(item=>{
             item.checked = this.isAllChecked(item.id);
-          });
-          this.$forceUpdate();
+          })
+
+          this.$forceUpdate()
         });
       },
       getResourceChecked(resourceId,allocResource){
@@ -124,6 +131,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
+
           let checkedResourceIds = new Set();
           if (this.allResource != null && this.allResource.length > 0) {
             this.allResource.forEach(item => {
@@ -132,41 +140,48 @@
               }
             });
           }
-          let params = new URLSearchParams();
+
+          let params = new URLSearchParams()
           params.append("roleId", this.roleId);
           params.append("resourceIds", Array.from(checkedResourceIds));
-          allocResource(params).then(response => {
-            this.$message({
-              message: '分配成功',
-              type: 'success',
-              duration: 1000
-            });
-            this.$router.back();
+
+          dataApiByRole.allocResource(params).then(() => {
+
+            this.$message({message: '分配成功', type: 'success', duration: 1000})
+            this.$router.back()
+
           })
         })
       },
       handleClear() {
+
         this.allResourceCate.forEach(item => {
           item.checked = false;
-        });
+        })
+
         this.allResource.forEach(item => {
           item.checked = false;
-        });
+        })
+
         this.$forceUpdate();
       },
       handleCheckAllChange(cate) {
-        let cateResources = this.getResourceByCate(cate.id);
+
+        let cateResources = this.getResourceByCate(cate.id)
+
         for (let i = 0; i < cateResources.length; i++) {
-          cateResources[i].checked = cate.checked;
+          cateResources[i].checked = cate.checked
         }
-        this.$forceUpdate();
+        this.$forceUpdate()
       },
       handleCheckChange(resource) {
+
         this.allResourceCate.forEach(item=>{
           if(item.id===resource.categoryId){
             item.checked = this.isAllChecked(resource.categoryId);
           }
-        });
+        })
+
         this.$forceUpdate();
       }
     }

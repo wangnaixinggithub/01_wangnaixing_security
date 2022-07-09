@@ -1,50 +1,43 @@
-import request from '@/utils/request'
+import $http from "@/common/http"
 
 /**
  * 获取全部资源分类
  * @returns {*}
  */
-export const listAllCate = () =>  {
-  return request({
-    url: '/resourceCategory/listAll',
-    method: 'get'
-  })
-}
+const listAllCate = () =>  $http.get('/resourceCategory/listAll')
+
 
 /**
  * 创建资源分类
  * @param data
  * @returns {*}
  */
-export const createResourceCategory = data =>  {
-  return request({
-    url: '/resourceCategory/create',
-    method: 'post',
-    data: data
-  })
-}
+const createResourceCategory = data =>  $http.post('/resourceCategory/create',data)
+
+
 /**
  * 更新资源分类
  * @param id
  * @param data
  * @returns {*}
  */
-export const updateResourceCategory = (id, data)  =>  {
-  return request({
-    url: '/resourceCategory/update/' + id,
-    method: 'post',
-    data: data
-  })
-}
+const updateResourceCategory = (id, data)  => $http.post('/resourceCategory/update/' + id,data)
+
+
 
 /**
  * 删除资源分类
  * @param id
  * @returns {*}
  */
-export const deleteResourceCategory = id => {
-  return request({
-    url: '/resourceCategory/delete/' + id,
-    method: 'post'
-  })
+const deleteResourceCategory = id => $http.post('/resourceCategory/delete/' + id)
+
+
+const dataApi = {
+  listAllCate, // 获取全部资源分类
+  createResourceCategory, //  创建资源分类
+  updateResourceCategory, // 更新资源分类
+  deleteResourceCategory // 删除资源分类
 }
+
+export default dataApi

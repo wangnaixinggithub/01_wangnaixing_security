@@ -8,7 +8,7 @@
     <div class="table-container">
       <el-table ref="resourceCategoryTable"
                 :data="list"
-                style="width: 100%;"
+                style="width: 100%"
                 v-loading="listLoading" border>
         <el-table-column label="编号" width="100" align="center">
           <template slot-scope="scope">{{scope.row.id}}</template>
@@ -58,12 +58,13 @@
   </div>
 </template>
 <script>
-  import {listAllCate,createResourceCategory,updateResourceCategory,deleteResourceCategory} from '@/api/resourceCategory';
-  import {formatDate} from '@/utils/date';
+  import dataApi from '@/api/resourceCategory'
+  import {formatDate} from '@/utils/date'
+
   const defaultResourceCategory={
     name:null,
     sort:0
-  };
+  }
   export default {
     name: 'resourceCategoryList',
     data() {
@@ -76,27 +77,27 @@
       }
     },
     created() {
-      this.getList();
+      this.getList()
     },
     filters:{
       formatDateTime(time) {
         if (time == null || time === '') {
-          return 'N/A';
+          return 'N/A'
         }
-        let date = new Date(time);
+        let date = new Date(time)
         return formatDate(date, 'yyyy-MM-dd hh:mm:ss')
       }
     },
     methods: {
       handleAdd() {
-        this.dialogVisible = true;
-        this.isEdit = false;
-        this.resourceCategory = Object.assign({},defaultResourceCategory);
+        this.dialogVisible = true
+        this.isEdit = false
+        this.resourceCategory = Object.assign({},defaultResourceCategory)
       },
       handleUpdate(index,row){
-        this.dialogVisible = true;
-        this.isEdit = true;
-        this.resourceCategory = Object.assign({},row);
+        this.dialogVisible = true
+        this.isEdit = true
+        this.resourceCategory = Object.assign({},row)
       },
       handleDelete(index,row){
         this.$confirm('是否要删除该分类?', '提示', {
@@ -104,14 +105,12 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteResourceCategory(row.id).then(response => {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            });
-            this.getList();
-          });
-        });
+
+          dataApi.deleteResourceCategory(row.id).then(() => {
+            this.$message({type: 'success', message: '删除成功!'})
+            this.getList()
+          })
+        })
       },
       handleDialogConfirm() {
         this.$confirm('是否要确认?', '提示', {
@@ -120,32 +119,31 @@
           type: 'warning'
         }).then(() => {
           if (this.isEdit) {
-            updateResourceCategory(this.resourceCategory.id,this.resourceCategory).then(response => {
-              this.$message({
-                message: '修改成功！',
-                type: 'success'
-              });
-              this.dialogVisible =false;
-              this.getList();
+            dataApi.updateResourceCategory(this.resourceCategory.id,this.resourceCategory).then(() => {
+
+              this.$message({message: '修改成功！', type: 'success'})
+              this.dialogVisible =false
+
+              this.getList()
             })
           } else {
-            createResourceCategory(this.resourceCategory).then(response => {
-              this.$message({
-                message: '添加成功！',
-                type: 'success'
-              });
-              this.dialogVisible =false;
-              this.getList();
+            dataApi.createResourceCategory(this.resourceCategory).then(() => {
+
+              this.$message({message: '添加成功！', type: 'success'})
+              this.dialogVisible =false
+
+              this.getList()
             })
           }
         })
       },
       getList() {
-        this.listLoading = true;
-        listAllCate({}).then(response => {
-          this.listLoading = false;
-          this.list = response.data;
-        });
+        this.listLoading = true
+
+        dataApi.listAllCate({}).then(response => {
+          this.listLoading = false
+          this.list = response.data
+        })
       }
     }
   }

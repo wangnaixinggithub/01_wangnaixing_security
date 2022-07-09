@@ -43,7 +43,7 @@
 </template>
 
 <script>
-  import {fetchList, createMenu, updateMenu, getMenu} from '@/api/menu';
+  import dataApi from "@/api/menu"
 
   const defaultMenu = {
     title: '',
@@ -52,7 +52,7 @@
     icon: '',
     hidden: 0,
     sort: 0
-  };
+  }
   export default {
     name: "MenuDetail",
     props: {
@@ -83,20 +83,22 @@
     },
     created() {
       if (this.isEdit) {
-        getMenu(this.$route.query.id).then(response => {
-          this.menu = response.data;
-        });
+        dataApi.getMenu(this.$route.query.id).then(response => {
+          this.menu = response.data
+        })
       } else {
-        this.menu = Object.assign({}, defaultMenu);
+        this.menu = Object.assign({}, defaultMenu)
       }
-      this.getSelectMenuList();
+      this.getSelectMenuList()
     },
     methods: {
       getSelectMenuList() {
-        fetchList(0, {pageSize: 100, pageNum: 1}).then(response => {
-          this.selectMenuList = response.data.list;
-          this.selectMenuList.unshift({id: 0, title: '无上级菜单'});
-        });
+        dataApi.findAllMenu(0, {pageSize: 100, pageNum: 1}).then(response => {
+
+          this.selectMenuList = response.data.list
+          this.selectMenuList.unshift({id: 0, title: '无上级菜单'})
+
+        })
       },
       onSubmit(formName) {
         this.$refs[formName].validate((valid) => {
@@ -107,42 +109,48 @@
               type: 'warning'
             }).then(() => {
               if (this.isEdit) {
-                updateMenu(this.$route.query.id, this.menu).then(response => {
+                dataApi.updateMenu(this.$route.query.id, this.menu).then(response => {
+
                   this.$message({
                     message: '修改成功',
                     type: 'success',
                     duration: 1000
-                  });
-                  this.$router.back();
-                });
+                  })
+
+                  this.$router.back()
+                })
               } else {
-                createMenu(this.menu).then(response => {
-                  this.$refs[formName].resetFields();
-                  this.resetForm(formName);
+                dataApi.createMenu(this.menu).then(() => {
+                  this.$refs[formName].resetFields()
+                  this.resetForm(formName)
+
                   this.$message({
                     message: '提交成功',
                     type: 'success',
                     duration: 1000
-                  });
-                  this.$router.back();
-                });
+                  })
+
+                  this.$router.back()
+                })
               }
-            });
+            })
 
           } else {
+
             this.$message({
               message: '验证失败',
               type: 'error',
               duration: 1000
-            });
-            return false;
+            })
+
+            return false
           }
-        });
+        })
       },
       resetForm(formName) {
-        this.$refs[formName].resetFields();
-        this.menu = Object.assign({}, defaultMenu);
-        this.getSelectMenuList();
+        this.$refs[formName].resetFields()
+        this.menu = Object.assign({}, defaultMenu)
+        this.getSelectMenuList()
       },
     }
   }
