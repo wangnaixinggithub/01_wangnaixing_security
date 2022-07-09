@@ -6,7 +6,7 @@
 
 # 2、项目介绍
 
-`wangnaixing`是一个权限管理系统的前端项目，基于Vue+Element实现。主要权限设置功能。
+`wangnaixing-admin-web`是一个权限管理系统的前端项目，基于Vue+Element实现。主要权限设置功能。
 
 # 3、技术选型
 
@@ -31,3 +31,7 @@
 [Apache License 2.0](https://github.com/macrozheng/mall-admin-web/blob/master/LICENSE)
 
 Copyright (c) 2018-2022 wangnaixing
+
+# 6、公众号
+
+![mmqrcode1657355514487](../../../../09_my_software/Tencent/QQ_download/827376239/FileRecv/MobileFile/mmqrcode1657355514487.png)
