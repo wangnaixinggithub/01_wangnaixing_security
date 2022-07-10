@@ -1,16 +1,17 @@
 server:
-  port: 8080
+  port: 8090
 
 spring:
-  application:
-    name: mall-tiny
   profiles:
     active: dev
-#  main:
+  application:
+    name: mall-tiny
+  #  main:
 #    allow-circular-references: true
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml

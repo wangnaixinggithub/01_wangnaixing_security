@@ -4,10 +4,13 @@ import { Message } from 'element-ui'
 
 // Progress 进度条
 import NProgress from 'nprogress'
+
 // Progress 进度条样式
 import 'nprogress/nprogress.css'
+
 // 验权
-import { getToken } from '@/utils/auth'
+import auth from '@/utils/auth'
+
 // 不重定向白名单
 const whiteList = ['/login']
 
@@ -15,7 +18,7 @@ const whiteList = ['/login']
 router.beforeEach((to, from, next) => {
   NProgress.start()
 
-  if (getToken()) {
+  if (auth.getToken()) {
 
     if (to.path === '/login') {
       //如果当前页面是dashboard，afterEach钩子不会触发，所以手动处理
@@ -54,6 +57,7 @@ router.beforeEach((to, from, next) => {
     } else {
 
       next('/login')
+
       NProgress.done()
 
     }

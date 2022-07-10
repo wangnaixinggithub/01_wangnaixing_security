@@ -3,8 +3,11 @@ import { asyncRouterMap, constantRouterMap } from '@/router/index';
 //判断是否有权限访问该菜单
 function hasPermission(menus, route) {
   if (route.name) {
+
     let currMenu = getMenu(route.name, menus);
+
     if (currMenu!=null) {
+
       //设置菜单的标题、图标和可见性
       if (currMenu.title != null && currMenu.title !== '') {
         route.meta.title = currMenu.title;
@@ -19,6 +22,7 @@ function hasPermission(menus, route) {
         route.sort = currMenu.sort;
       }
       return true;
+
     } else {
       route.sort = 0;
       if (route.hidden !== undefined && route.hidden === true) {

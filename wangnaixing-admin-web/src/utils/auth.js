@@ -2,14 +2,31 @@ import Cookies from 'js-cookie'
 
 const TokenKey = 'loginToken'
 
-export function getToken() {
-  return Cookies.get(TokenKey)
+/**
+ * 获取Token信息
+ * @returns
+ */
+const getToken = () => Cookies.get(TokenKey)
+
+/**
+ * 设置Token信息
+ * @param token
+ * @returns
+ */
+const setToken = token => Cookies.set(TokenKey, token)
+
+/**
+ * 移除Token信息
+ * @returns =
+ */
+const removeToken = () => Cookies.remove(TokenKey)
+
+
+let auth =  {
+  getToken,
+  setToken,
+  removeToken
+
 }
 
-export function setToken(token) {
-  return Cookies.set(TokenKey, token)
-}
-
-export function removeToken() {
-  return Cookies.remove(TokenKey)
-}
+export default auth

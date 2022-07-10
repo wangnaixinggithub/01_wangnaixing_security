@@ -233,6 +233,7 @@
         this.isEdit = false;
         this.admin = Object.assign({},defaultAdmin);
       },
+
       handleStatusChange(index, row) {
 
         this.$confirm('是否要修改该状态?', '提示', {
@@ -258,7 +259,7 @@
           type: 'warning'
         }).then(() => {
 
-          dataApi.deleteAdmin(row.id).then(response => {
+          dataApi.deleteAdmin(row.id).then(() => {
 
             this.$message({type: 'success', message: '删除成功!'})
             this.gettableData()
@@ -272,13 +273,15 @@
         this.admin = Object.assign({},row);
       },
       handleDialogConfirm() {
+
         this.$confirm('是否要确认?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
+
           if (this.isEdit) {
-            dataApi.updateAdmin(this.admin.id,this.admin).then(response => {
+            dataApi.updateAdmin(this.admin.id,this.admin).then(() => {
 
               this.$message({message: '修改成功！', type: 'success'})
               this.dialogVisible =false

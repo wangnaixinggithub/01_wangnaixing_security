@@ -1,22 +1,22 @@
 package com.wnx.common.api;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * 通用返回对象
  * @param <T> 封装的数据 泛型
  */
+@Data
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CommonResult<T> {
     private long code;
     private String message;
     private T data;
 
-    protected CommonResult() {
-    }
-
-    protected CommonResult(long code, String message, T data) {
-        this.code = code;
-        this.message = message;
-        this.data = data;
-    }
 
     /**
      * 成功返回结果
@@ -98,27 +98,4 @@ public class CommonResult<T> {
         return new CommonResult<T>(ResultCode.FORBIDDEN.getCode(), ResultCode.FORBIDDEN.getMessage(), data);
     }
 
-    public long getCode() {
-        return code;
-    }
-
-    public void setCode(long code) {
-        this.code = code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public T getData() {
-        return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
-    }
 }

@@ -1,9 +1,9 @@
-import { getToken, setToken, removeToken } from '@/utils/auth'
-import dataApi from "../../api/login";
+import auth from '@/utils/auth'
+import dataApi from "../../api/login"
 
 const user = {
   state: {
-    token: getToken(),
+    token: auth.getToken(),
     name: '',
     avatar: '',
     roles: []
@@ -25,20 +25,34 @@ const user = {
   },
 
   actions: {
-    // 登录
+    /**
+     * 登录方法
+      * @param userInfo 登录的用户模型
+     */
     Login({ commit }, userInfo) {
+
+
       const username = userInfo.username.trim()
+
       return new Promise((resolve, reject) => {
+
         dataApi.login(username, userInfo.password).then(response => {
           const data = response.data
+
+          //1、调用登录API得到JWT
           const tokenStr = data.tokenHead + data.token
 
-          setToken(tokenStr)
+          //2、JWT存入Token
+          auth.setToken(tokenStr)
+
+          //3、更新Store 存入Token
           commit('SET_TOKEN', tokenStr)
           resolve()
 
         }).catch(error => {
+
           reject(error)
+
         })
       })
     },
@@ -77,7 +91,7 @@ const user = {
         dataApi.logout(state.token).then(() => {
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
-          removeToken()
+          auth.removeToken()
           resolve()
 
         }).catch(error => {
@@ -91,8 +105,10 @@ const user = {
     // 前端 登出
     FedLogOut({ commit }) {
       return new Promise(resolve => {
+
         commit('SET_TOKEN', '')
-        removeToken()
+        auth.removeToken()
+
         resolve()
       })
     }

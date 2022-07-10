@@ -6,10 +6,14 @@
                :rules="loginRules"
                ref="loginForm"
                label-position="left">
+
+        <!-- 1、登录图标-->
         <div style="text-align: center">
           <svg-icon icon-class="login-mall" style="width: 56px;height: 56px;color: #409EFF"></svg-icon>
         </div>
+        <!-- 2、登录标题   -->
         <h2 class="login-title color-main">mall-admin-web</h2>
+        <!-- 3、用户名   -->
         <el-form-item prop="username">
           <el-input name="username"
                     type="text"
@@ -21,6 +25,7 @@
           </span>
           </el-input>
         </el-form-item>
+        <!-- 4、密码   -->
         <el-form-item prop="password">
           <el-input name="password"
                     :type="pwdType"
@@ -36,7 +41,9 @@
           </span>
           </el-input>
         </el-form-item>
-        <el-form-item style="margin-bottom: 60px;text-align: center">
+
+        <!-- 4、确认取消按钮   -->
+        <el-form-item style="margin-bottom: 60px;pxtext-align: center">
           <el-button style="width: 45%" type="primary" :loading="loading" @click.native.prevent="handleLogin">
             登录
           </el-button>
@@ -44,6 +51,7 @@
             获取体验账号
           </el-button>
         </el-form-item>
+
       </el-form>
     </el-card>
     <img :src="login_center_bg" class="login-center-layout">
@@ -66,27 +74,27 @@
 </template>
 
 <script>
-  import {isvalidUsername} from '@/utils/validate';
-  import {setSupport,getSupport,setCookie,getCookie} from '@/utils/support';
+  import validate from '@/utils/validate'
+  import support from '@/utils/support'
   import login_center_bg from '@/assets/images/login_center_bg.png'
 
   export default {
     name: 'login',
     data() {
       const validateUsername = (rule, value, callback) => {
-        if (!isvalidUsername(value)) {
+        if (!validate.isValidUsername(value)) {
           callback(new Error('请输入正确的用户名'))
         } else {
           callback()
         }
-      };
+      }
       const validatePass = (rule, value, callback) => {
         if (value.length < 3) {
           callback(new Error('密码不能小于3位'))
         } else {
           callback()
         }
-      };
+      }
       return {
         loginForm: {
           username: '',
@@ -104,16 +112,22 @@
       }
     },
     created() {
-      this.loginForm.username = getCookie("username");
-      this.loginForm.password = getCookie("password");
-      if(this.loginForm.username === undefined||this.loginForm.username==null||this.loginForm.username===''){
-        this.loginForm.username = 'admin';
+      //1、先在Cookies中拿到username 和 password
+      this.loginForm.username = support.getCookie("username")
+      this.loginForm.password = support.getCookie("password")
+
+      //2、如果Cookies中没有username和password 默认用户名是admin 密码为Null
+      if(!this.loginForm.username){
+        this.loginForm.username = 'admin'
       }
-      if(this.loginForm.password === undefined||this.loginForm.password==null){
-        this.loginForm.password = '';
+
+      if(!this.loginForm.password){
+        this.loginForm.password = ''
       }
+
     },
     methods: {
+
       showPwd() {
         if (this.pwdType === 'password') {
           this.pwdType = ''
@@ -124,32 +138,38 @@
       handleLogin() {
         this.$refs.loginForm.validate(valid => {
           if (valid) {
-            this.loading = true;
+            this.loading = true
+
             this.$store.dispatch('Login', this.loginForm).then(() => {
-              this.loading = false;
-              setCookie("username",this.loginForm.username,15);
-              setCookie("password",this.loginForm.password,15);
+              this.loading = false
+
+              //4、此刻登录成功了,存入登录时的账号 密码 进入 Cookie
+              support.setCookie("username",this.loginForm.username,15)
+              support.setCookie("password",this.loginForm.password,15)
+
+              //5、路由跳转到 / 页面
               this.$router.push({path: '/'})
+
             }).catch(() => {
+
               this.loading = false
             })
+
           } else {
-            console.log('参数验证不合法！');
+
+            console.log('参数验证不合法！')
             return false
           }
         })
       },
-      handleTry(){
+       handleTry(){
         this.dialogVisible =true
       },
       dialogConfirm(){
-        this.dialogVisible =false;
-        setSupport(true);
+        this.dialogVisible =false
+
       },
-      dialogCancel(){
-        this.dialogVisible = false;
-        setSupport(false);
-      }
+
     }
   }
 </script>

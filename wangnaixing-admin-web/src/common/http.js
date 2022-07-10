@@ -1,7 +1,7 @@
 import axios from "axios"
-import store from "../store";
-import {Message, MessageBox} from "element-ui";
-import { getToken } from '@/utils/auth'
+import store from "../store"
+import {Message, MessageBox} from "element-ui"
+import auth from '@/utils/auth'
 
 axios.defaults.withCredentials = true
 axios.defaults.headers.post['X-Requested-With'] = 'XMLHttpRequest'
@@ -14,7 +14,7 @@ axios.interceptors.request.use(config => {
   config.headers['Content-Type'] = 'application/json;charset=utf-8'
 
   if (store.getters.token) {
-    config.headers['Authorization'] = getToken()
+    config.headers['Authorization'] = auth.getToken()
   }
 
 

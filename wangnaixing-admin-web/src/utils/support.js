@@ -1,17 +1,22 @@
-import Cookies from "js-cookie";
-const SupportKey='supportKey';
-export function getSupport() {
-  return Cookies.get(SupportKey)
-}
+import Cookies from "js-cookie"
 
-export function setSupport(isSupport) {
-  return Cookies.set(SupportKey, isSupport,{ expires: 3 })
-}
+/**
+ * 设置Cookies值
+ * @param key
+ * @param value
+ * @param expires
+ * @returns {*}
+ */
+const setCookie = (key,value,expires) => Cookies.set(key, value,{ expires: expires})
 
-export function setCookie(key,value,expires) {
-  return Cookies.set(key, value,{ expires: expires})
-}
+/**
+ * 根据Key获取Cookies值
+ * @param key
+ * @returns {*}
+ */
+const  getCookie = key => Cookies.get(key)
 
-export function getCookie(key) {
-  return Cookies.get(key)
+export default {
+  setCookie,
+  getCookie
 }

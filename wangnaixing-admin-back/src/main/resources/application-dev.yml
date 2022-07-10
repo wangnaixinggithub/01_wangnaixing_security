@@ -8,9 +8,8 @@ spring:
     database: 0
     port: 6379
     password:
-    timeout: 3000ms 
-
+    timeout: 3000ms
 logging:
   level:
     root: info
-    com.macro.mall: debug
+    com.wnx: debug

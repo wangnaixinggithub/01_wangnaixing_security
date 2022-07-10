@@ -4,7 +4,6 @@ import com.wnx.modules.ums.model.UmsResource;
 import com.wnx.modules.ums.service.UmsAdminService;
 import com.wnx.modules.ums.service.UmsResourceService;
 import com.wnx.security.component.DynamicSecurityService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.ConfigAttribute;
@@ -20,12 +19,17 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by macro on 2019/11/9.
  */
 @Configuration
-public class MallSecurityConfig {
+public class CustomerSecurityConfig {
 
-    @Autowired
-    private UmsAdminService adminService;
-    @Autowired
-    private UmsResourceService resourceService;
+
+    private final UmsAdminService adminService;
+
+    private final UmsResourceService resourceService;
+
+    public CustomerSecurityConfig(UmsAdminService adminService, UmsResourceService resourceService) {
+        this.adminService = adminService;
+        this.resourceService = resourceService;
+    }
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -40,9 +44,11 @@ public class MallSecurityConfig {
             public Map<String, ConfigAttribute> loadDataSource() {
                 Map<String, ConfigAttribute> map = new ConcurrentHashMap<>();
                 List<UmsResource> resourceList = resourceService.list();
+
                 for (UmsResource resource : resourceList) {
                     map.put(resource.getUrl(), new org.springframework.security.access.SecurityConfig(resource.getId() + ":" + resource.getName()));
                 }
+
                 return map;
             }
         };
